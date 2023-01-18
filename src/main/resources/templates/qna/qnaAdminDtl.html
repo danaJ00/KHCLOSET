@@ -1,0 +1,112 @@
+<!-- QNA 상세 페이지 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel='stylesheet' href='/css/woocommerce-layout.css' type='text/css' media='all'/>
+  <link rel='stylesheet' href='/css/woocommerce-smallscreen.css' type='text/css' media='only screen and (max-width: 768px)'/>
+  <link rel='stylesheet' href='/css/woocommerce.css' type='text/css' media='all'/>
+  <link rel='stylesheet' href='/css/font-awesome.min.css' type='text/css' media='all'/>
+  <link rel='stylesheet' href='/css/style.css' type='text/css' media='all'/>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Oswald:400,500,700%7CRoboto:400,500,700%7CHerr+Von+Muellerhoff:400,500,700%7CQuattrocento+Sans:400,500,700' type='text/css' media='all'/>
+  <link rel='stylesheet' href='/css/easy-responsive-shortcodes.css' type='text/css' media='all'/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<th:block layout:fragment="css">
+  <style>
+        h3 {
+            text-align: center;
+            margin : 20px 0;
+        }
+        table {
+            margin-bottom : 3%;
+        }
+        td {
+            width : 75%
+        }
+        .qnadetail {
+            margin : 0 20%;
+        }
+        .qnadetail table th {
+            padding-left : 15px;
+        }
+        .btn-lg {
+            display : inline-block;
+            margin: 10px 5px 20px 5px;
+            border-radius : 0px;
+            background-color : #333;
+            color : #f9f9f9;
+            min-width : 70px;
+        }
+    </style>
+</th:block>
+</head>
+<div style="margin:20px" class="content">
+  <header id="masthead" class="site-header">
+    <div class="site-branding">
+      <h1 class="admin-title"><a href="/admin/item/new">쇼핑몰 회원관리</a></h1>
+
+    </div>
+    <nav id="site-navigation" class="main-navigation">
+      <button class="menu-toggle">Menu</button>
+      <div class="menu-menu-1-container">
+        <ul id="menu-menu-1" class="menu">
+          <li><a href="/members/list">회원목록 조회/수정</a>
+          </li>
+          <li><a href="/admin/item/new">상품등록</a>
+          </li>
+          <li><a href="/admin/items">상품목록</a>
+          </li>
+          <li><a href="/admin/orders">주문목록</a>
+          </li>
+          <li><a href="/qna/admin">QNA목록</a>
+          </li>
+          <li><a href="/">홈으로</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <script src='/js/jquery.js'></script>
+  <script src='/js/plugins.js'></script>
+  <script src='/js/scripts.js'></script>
+  <script src='/js/masonry.pkgd.min.js'></script>
+
+
+  <div style="display:block;" class="qnadetail">
+    <h3> QNA 답변 </h3>
+    <table>
+      <tr>
+        <th>번호</th>
+        <td>[[${qnaDto.id}]]</td>
+      </tr>
+      <tr>
+        <th>분류</th>
+        <td>[[${qnaDto.qnaNm}]]</td>
+      </tr>
+      <tr>
+        <th>제목</th>
+        <td>[[${qnaDto.title}]]</td>
+      </tr>
+      <tr>
+        <th>내용</th>
+        <td>[[${qnaDto.content}]]</td>
+      </tr>
+    </table>
+    <hr>
+    <table>
+      <tr>
+        <th>답변</th>
+        <td>[[${qnaDto.reply == null} ? '아직 답변이 등록되지 않았습니다' : ${qnaDto.reply}]]</td>
+      </tr>
+    </table>
+    <div style="text-align: center">
+      <button class="btn btn-lg" value="목록" onclick="history.back()">목록</button>
+    </div>
+  </div>
+</div>
+</html>

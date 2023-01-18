@@ -1,0 +1,68 @@
+<!-- QNA 상세 페이지 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout2}">
+<th:block layout:fragment="css">
+    <style>
+        h3 {
+            text-align: center;
+            margin : 20px 0;
+        }
+        table {
+            margin-bottom : 3%;
+        }
+        td {
+            width : 75%
+        }
+        .qnadetail {
+            margin : 0 20%;
+        }
+        .qnadetail table th {
+            padding-left : 15px;
+        }
+        .btn-lg {
+            display : inline-block;
+            margin: 10px 5px 20px 5px;
+            border-radius : 0px;
+            background-color : #333;
+            color : #f9f9f9;
+            min-width : 70px;
+        }
+    </style>
+</th:block>
+<div layout:fragment="content" class="content-mg">
+
+    <div class="qnadetail">
+        <h3> 1:1 문의내역 (QNA) </h3>
+        <table>
+            <tr>
+                <th>번호</th>
+                <td>[[${qnaDto.id}]]</td>
+            </tr>
+            <tr>
+                <th>분류</th>
+                <td>[[${qnaDto.qnaNm}]]</td>
+            </tr>
+            <tr>
+                <th>제목</th>
+                <td>[[${qnaDto.title}]]</td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td>[[${qnaDto.content}]]</td>
+            </tr>
+        </table>
+        <hr>
+        <table>
+            <tr>
+                <th>답변</th>
+                <td>[[${qnaDto.reply == null} ? '아직 답변이 등록되지 않았습니다' : ${qnaDto.reply}]]</td>
+            </tr>
+        </table>
+        <div style="text-align: center">
+            <button class="btn btn-lg" value="목록" onclick="history.back()">목록</button>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel='stylesheet' href='/css/woocommerce-layout.css' type='text/css' media='all'/>
+    <link rel='stylesheet' href='/css/woocommerce-smallscreen.css' type='text/css'
+          media='only screen and (max-width: 768px)'/>
+    <link rel='stylesheet' href='/css/woocommerce.css' type='text/css' media='all'/>
+    <link rel='stylesheet' href='/css/font-awesome.min.css' type='text/css' media='all'/>
+    <link rel='stylesheet' href='/css/style.css' type='text/css' media='all'/>
+    <link rel='stylesheet'
+          href='https://fonts.googleapis.com/css?family=Oswald:400,500,700%7CRoboto:400,500,700%7CHerr+Von+Muellerhoff:400,500,700%7CQuattrocento+Sans:400,500,700'
+          type='text/css' media='all'/>
+    <link rel='stylesheet' href='/css/easy-responsive-shortcodes.css' type='text/css' media='all'/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <script src='/js/jquery.js'/>
+    <script src='/js/plugins.js'/>
+    <script src='/js/scripts.js'/>
+    <script src='/js/masonry.pkgd.min.js'/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="css"></th:block>
+    <!-- 사용자 스크립트 추가 -->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+        $(document).ready(function(){
+            var errorMessage = [[${errorMessage}]];
+            if(errorMessage != null){
+                alert(errorMessage);
+            }
+            bindDomEvent();
+        });
+
+        function bindDomEvent(){
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();  //이미지 파일명
+                var fileExt = fileName.substring(fileName.lastIndexOf(".")+1); // 확장자 추출
+                fileExt = fileExt.toLowerCase(); //소문자 변환
+
+                if(fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif" && fileExt != "png" && fileExt != "bmp"){
+                    alert("이미지 파일만 등록이 가능합니다.");
+                    return;
+                }
+                $(this).siblings(".custom-file-label").html(fileName);
+            });
+            }
+        $( function() {
+            $(".slide_gallery").bxSlider({
+                auto : true, autoControls : false, pager:false
+            });
+        });
+
+        </script>
+    </th:block>
+
+    <!-- 사용자 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <style>
+        h3 {
+            text-align: center;
+            margin : 30px 0;
+        }
+        .input-group {
+            margin-bottom : 15px;
+        }
+        .img-div {
+            margin-bottom : 10px;
+        }
+        .fieldError {
+            color : #bd2130;
+        }
+        .btn {
+            border-radius : 0px;
+            margin-left:10px;
+        }
+        </style>
+    </th:block>
+
+</head>
+
+<div style="margin:20px" class="content">
+    <header id="masthead" class="site-header">
+        <div class="site-branding">
+            <h1 class="admin-title"><a href="/admin/item/new">쇼핑몰 회원관리</a></h1>
+
+        </div>
+        <nav id="site-navigation" class="main-navigation">
+            <button class="menu-toggle">Menu</button>
+            <div class="menu-menu-1-container">
+                <ul id="menu-menu-1" class="menu">
+                    <li><a href="/members/list">회원목록 조회/수정</a>
+                    </li>
+                    <li><a href="/admin/item/new">상품등록</a>
+                    </li>
+                    <li><a href="/admin/items">상품목록</a>
+                    </li>
+                    <li><a href="/admin/orders">주문목록</a>
+                    </li>
+                    <li><a href="/qna/admin">QNA목록</a>
+                    </li>
+                    <li><a href="/">홈으로</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <script src='/js/jquery.js'></script>
+    <script src='/js/plugins.js'></script>
+    <script src='/js/scripts.js'></script>
+    <script src='/js/masonry.pkgd.min.js'></script>
+
+
+    <div style="text-align:center; display:block;" class="row">
+        <h3> 주문 목록 </h3>
+        <table style="margin:10px;" border="1">
+            <thead>
+            <tr>
+                <th>주문번호</th>
+                <th>주문날짜</th>
+                <th>수령인</th>
+                <th>주소</th>
+                <th>주문관리</th>
+                <th>주문상태</th>
+            </tr>
+            </thead>
+            <tbody  th:each="delivery : ${deliveryList}" >
+            <tr th:if="${delivery.order.id == order.orderId}" th:each="order : ${orders.getContent()}" >
+                <td th:text="${delivery.id}"></td>
+                <td th:text="${delivery.regTime}"></td>
+                <td th:text="${delivery.deliveryName}"></td>
+                <td th:text="${delivery.deliveryStreetAdr} + ${delivery.deliveryDetailAdr}"></td>
+                <td> <button type="button" class="btn btn-danger"><a style="color:#fff;"
+                                                                     th:href="'/admin/order/delete/' + ${delivery.order.id}">삭제</a></button></td>
+
+                <td th:text="${order.orderStatus == T(com.shop.constant.OrderStatus).FINAL || order.orderId == delivery.order.id} ? '주문완료' :
+                                  (${order.orderStatus == T(com.shop.constant.OrderStatus).CANCEL || order.orderId == delivery.order.id} ? '주문취소' : '주문요청' ) "></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<th:block layout:fragment="css">
+    <style>
+        #content h3 {
+            text-align : center;
+        }
+        .guide {
+            padding: 0 15%;
+            margin: 0 auto;
+        }
+        .guide #member, .guide #order, .guide #payment, .guide #delivery, .guide #refund {
+            padding-top: 30px;
+        }
+        .guide .dtab {
+            margin: 61px 0 0;
+            text-align: center;
+            border-top: 1px solid #999;
+        }
+
+        .guide ul.link {
+            display: inline-block;
+            margin: -42px 0 40px 0;
+        }
+
+        .guide ul.link:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .guide ul.link li {
+            list-style: none;
+            float: left;
+            border-left: 1px solid #eee;
+            border-top: 1px solid #eee;
+            background: #f2f2f2;
+        }
+
+        .guide ul.link li.selected a {
+            position: relative;
+            color: #222;
+            background: #fff;
+            padding-bottom: 1px;
+            margin: -1px -1px 0px -1px;
+            left: -1px;
+            border-left: 1px solid #999;
+            border-right: 1px solid #999;
+            border-top: 1px solid #999;
+        }
+
+        .guide ul.link li a {
+            text-decoration: none;
+            transition: all 0.5s ease;
+            display: block;
+            padding: 0 20px;
+            min-width: 60px;
+            font-weight: normal;
+            color: #aaa;
+            font-size: 15px;
+            line-height: 40px;
+            background: #fff;
+            margin: 0 0 0 -1px;
+            border-right: 1px solid #eee;
+        }
+
+        .guide .cont {
+            padding: 17px 10px 46px 9px;
+            color: #888;
+            text-align: left;
+            word-spacing: 2px;
+            font-size: 15px;
+            line-height: 24px;
+            font-weight: normal;
+        }
+
+        .guide .cont h3 {
+            margin: 0 0 20px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        @media screen and (max-width: 720px) {
+            .guide .dtab {
+            display : none;
+            }
+
+            .guide .cont {
+            padding: 17px 10px 0px 9px;
+        }
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content" class="content-mg">
+    <div id="content" class="site-content">
+        <h3>이용 안내</h3>
+        <div class="guide">
+            <div id="member">
+                <div class="dtab">
+                    <ul class="link">
+                        <li class="selected"><a href="#member">회원가입</a></li>
+                        <li><a href="#order">주문</a></li>
+                        <li><a href="#payment">결제</a></li>
+                        <li><a href="#delivery">배송</a></li>
+                        <li><a href="#refund">교환／반품／환불</a></li>
+                    </ul>
+                </div>
+                <div class="cont">
+                    <h4>회원가입 안내</h4>
+                    <div>
+                        <p>
+                            홈페이지 우측 상단의 Sign Up 메뉴를 통해 이용약관, 개인정보보호정책에 동의 후 양식에 따라 내용을 작성하여 회원으로 가입할 수 있습니다. 가입 즉시 홈페이지
+                            내 서비스를 별도의 비용 없이 이용하실 수 있습니다. 회원가입 양식에 적은 내용은 주문할 때 필요한 정보들을 대신할 수 있습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="order">
+                <div class="dtab">
+                    <ul class="link">
+                        <li><a href="#member">회원가입</a></li>
+                        <li class="selected"><a href="#order">주문</a></li>
+                        <li><a href="#payment">결제</a></li>
+                        <li><a href="#delivery">배송</a></li>
+                        <li><a href="#refund">교환／반품／환불</a></li>
+                    </ul>
+                </div>
+                <div class="cont">
+                    <h4>주문 안내</h4>
+                    <div>
+                        <p>
+                            로그인 이후 상품 주문은 다음과 같은 단계로 진행됩니다.<br>
+                            1. 상품 검색 및 선택<br>
+                            2. 장바구니에 담기<br>
+                            3. 수량 선택 및 주문<br>
+                            4. 주문서 작성<br>
+                            5. 결제 방법 선택 및 결제<br>
+                            6. 주문 성공 화면 및 주문 번호 발급<br>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="payment">
+                <div class="dtab">
+                    <ul class="link">
+                        <li><a href="#member">회원가입</a></li>
+                        <li><a href="#order">주문</a></li>
+                        <li class="selected"><a href="#payment">결제</a></li>
+                        <li><a href="#delivery">배송</a></li>
+                        <li><a href="#refund">교환／반품／환불</a></li>
+                    </ul>
+                </div>
+                <div class="cont">
+                    <h4>결제안내</h4>
+                    <div>
+                        <p>
+                            무통장 입금 방식을 통해 상품의 구매 대금을 PC뱅킹, 인터넷뱅킹, 텔레뱅킹, 가까운 은행 영업소, 현금자동입출금기(ATM) 등을 통해 입금하시면 됩니다. 입금
+                            계좌는 주문 내역 혹은 홈페이지 하단에서 확인하실 수 있습니다. 주문시 입력한 입금자명과 실제입금자의 성명이 반드시 일치하여야 하며, 주문 후 7일 이내로 입금을
+                            하셔야 주문이 완료됩니다. 7일 이후에 입금이 확인되지 않은 주문은 취소됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="delivery">
+                <div class="dtab">
+                    <ul class="link">
+                        <li><a href="#member">회원가입</a></li>
+                        <li><a href="#order">주문</a></li>
+                        <li><a href="#payment">결제</a></li>
+                        <li class="selected"><a href="#delivery">배송</a></li>
+                        <li><a href="#refund">교환／반품／환불</a></li>
+                    </ul>
+                </div>
+                <div class="cont">
+                    <h4>배송안내</h4>
+                    <div>
+                        <p>
+                            배송 방법 : 택배<br>
+                            배송 지역 : 전국<br>
+                            배송 비용 : 조건부 무료(주문 금액 30,000원 미만인 경우 배송비 3,000원이 추가됩니다)<br>
+                            배송 기간 : 3~7일<br>
+                            배송 안내 : 주문하신 상품은 입금이 확인 된 이후 배송이 시작됩니다. 상품에 따라 배송이 지연될 수 있습니다<br>
+                            *산간벽지 및 도서지방은 배송 비용이 추가될 수 있습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="refund">
+                <div class="dtab">
+                    <ul class="link">
+                        <li><a href="#member">회원가입</a></li>
+                        <li><a href="#order">주문</a></li>
+                        <li><a href="#payment">결제</a></li>
+                        <li><a href="#delivery">배송</a></li>
+                        <li class="selected"><a href="#refund">교환／반품／환불</a></li>
+                    </ul>
+                </div>
+                <div class="cont">
+                    <h4>교환／반품／환불</h4>
+                    <div>
+                        <p>
+                            교환 및 반품 주소 : 서울특별시 강남구 역삼동 테헤란로 14길 6 남도빌딩, 5층 T-Class<br>
+                            *단순 변심으로 인한 교환, 반품의 경우 상품 반송 비용은 고객이 부담합니다.<br><br>
+
+                            환불은 반품 확인 여부를 확인한 후 3영업일 이내에 이루어집니다.<br>
+                        </p>
+                    </div>
+                </div>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

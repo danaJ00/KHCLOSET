@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="css">
+    <style>
+        .carousel-inner > .item{
+            height: 200px;
+        }
+        .margin{
+            margin-bottom: 30px;
+        }
+        .banner{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .card-text{
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+        .center{
+            text-align: center;
+        }
+        .right-mg {
+            position: fixed;
+            top: 75%;
+            z-index: 1;
+            right:1%;
+            width:58px
+        }
+        .next-button {
+            border: 1px solid #cdcdcd;
+            border-radius: 6px;
+            color: #8d8d8d;
+            display: inline-block;
+            text-align: center;
+            margin: 20px 0 0;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 11px 53px;
+        }
+
+        .slide {
+            position: relative;
+            padding-top: 50px;
+            overflow: hidden;
+            margin : 0 10% 0 10%;
+        }
+
+        .panel {
+            width: 400%;
+            padding-top:6%;
+        }
+
+        .panel:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .panel li {
+            width: 7.9%;
+            margin : 0 0.22%;
+            border-radius: 20px;
+            border: 6px solid pink;
+            height: 100%;
+            float: left;
+            list-style:none;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            position: relative;
+        }
+
+        .panel li a img {
+            width:100%
+        }
+
+        .dot:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .dot {
+            position: absolute;
+            width:100%;
+            margin:0;
+            left: 50%;
+            top : 0;
+            transform: translateX(-50%);
+            text-align:center;
+        }
+
+        .dot li {
+            display: inline-block;
+            border: 1px solid #e4e4e4;
+            border-radius: 30px;
+            padding: 1% 2.7%;
+            margin-right: 1%;
+            font-size: 14px;
+            top: -4px;
+        }
+        .dot li.on {
+            border-color: #ff9994;
+            color: #ff9994;
+        }
+        .left-content {
+            display: inline-block;
+            width: 41%;
+            vertical-align: top;
+            margin: 5% 0 0 5%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .right-content {
+            display: inline-block;
+            width: 54%;
+            padding-left: 10px;
+            float: right;
+            font-size: 10px;
+            padding-top: 10px;
+        }
+        .aname {
+            color: #969696;
+            font-size: 10px;
+        }
+        .name {
+            margin-top: 5px;
+        }
+        .sell {
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+        $( function() {
+            $(".bxslider").bxSlider({
+                auto : true, autoControls : false, pager:false
+            });
+        });
+
+        $(document).ready(function() {
+          slide();
+        });
+
+
+        // 슬라이드
+        function slide() {
+          var wid = 0;
+          var now_num = 0;
+          var slide_length = 0;
+          var auto = null;
+          var $dotli = $('.dot>li');
+          var $panel = $('.panel');
+          var $panelLi = $panel.children('li');
+
+        // 변수 초기화
+        function init() {
+          wid = $('.slide').width();
+          now_num = $('.dot>li.on').index();
+          slide_length = $dotli.length;
+        }
+
+        // 이벤트 묶음
+        function slideEvent() {
+
+          // 슬라이드 하단 dot버튼 클릭했을때
+          $dotli.click(function() {
+            now_num = $(this).index();
+            slideMove();
+          });
+
+          // 이후 버튼 클릭했을때
+          $('.next').click(function() {
+            nextChkPlay();
+          });
+
+          // 이전 버튼 클릭했을때
+          $('.prev').click(function() {
+            prevChkPlay();
+          });
+
+<!--    // 오토플레이-->
+<!--    autoPlay();-->
+
+<!--    // 오토플레이 멈춤-->
+<!--    autoPlayStop();-->
+
+<!--    // 오토플레이 재시작-->
+<!--    autoPlayRestart();-->
+
+    // 화면크기 재설정 되었을때
+    resize();
+  }
+
+  // 자동실행 함수
+<!--  function autoPlay() {-->
+<!--    auto = setInterval(function() {-->
+<!--      nextChkPlay();-->
+<!--    }, 3000);-->
+<!--  }-->
+
+<!--  // 자동실행 멈춤-->
+<!--  function autoPlayStop() {-->
+<!--    $panelLi.mouseenter(function() {-->
+<!--      clearInterval(auto);-->
+<!--    });-->
+<!--  }-->
+
+
+<!--  // 자동실행 멈췄다가 재실행-->
+<!--  function autoPlayRestart() {-->
+<!--    $panelLi.mouseleave(function() {-->
+<!--      auto = setInterval(function() {-->
+<!--        nextChkPlay();-->
+<!--      }, 3000);-->
+<!--    });-->
+<!--  }-->
+
+  // 슬라이드 무브
+  function slideMove() {
+    $panel.stop().animate({
+      'margin-left': (-wid * now_num)/3
+    });
+    $dotli.removeClass('on');
+    $dotli.eq(now_num).addClass('on');
+  }
+
+  // 화면크기 조정시 화면 재설정
+  function resize() {
+    $(window).resize(function() {
+      init();
+      $panel.css({
+        'margin-left': (-wid * now_num)/3
+      });
+    });
+  }
+  init();
+  slideEvent();
+}
+
+
+    </script>
+
+
+</th:block>
+<div layout:fragment="content">
+    <div id="gallery_wrap">
+        <ul class="bxslider">
+            <li><a href="#"><img alt="사진 1"
+                                 src="https://atimg.sonyunara.com/files/attrangs/new_banner/1667377380_0.jpg.webp"></a></li>
+            <li><a href="#"><img alt="사진 2"
+                                 src="https://atimg.sonyunara.com/files/attrangs/new_banner/1667291116_0.jpg.webp"></a></li>
+            <li><a href="#"><img alt="사진 3"
+                                 src="https://atimg.sonyunara.com/files/attrangs/new_banner/1666313795_0.jpg.webp"></a></li>
+            <li><a href="#"><img alt="사진 4"
+                                 src="https://atimg.sonyunara.com/files/attrangs/new_banner/1666948115_0.jpg.webp"></a></li>
+            <li><a href="#"><img alt="사진 5"
+                                 src="https://atimg.sonyunara.com/files/attrangs/new_banner/1667206965_0.jpg.webp"></a></li>
+            <li><a href="#"><img alt="사진 6"
+                                 src="https://atimg.sonyunara.com/files/attrangs/new_banner/1667439776_0.jpg.webp"></a></li>
+            <li><a href="#"><img alt="사진 7"
+                                 src="https://atimg.sonyunara.com/files/attrangs/new_banner/1667463537_0.jpg.webp"></a></li>
+        </ul>
+    </div>
+    <div class="site-content" id="content">
+        <div class="content-area column full" id="primary">
+            <div style="font-size:large; padding-left:7%; font-weight:bold">
+                <a href="javascript:;">지금 가장 주목해야할 소식💖</a></div>
+            <main class="site-main" id="main">
+                <article class="hentry">
+                    <header class="entry-header">
+                        <div class="entry-thumbnail">
+                            <ul class="products">
+                                <th:block th:each="item, status: ${items.getContent()}">
+                                    <li class="product">
+                                        <a class="text-dark" th:href="'/item/'+${item.id}">
+                                            <img class="card-img-top" height="400" th:alt="${item.itemNm}"
+                                                 th:src="${item.imgUrl}">
+                                            <div class="info">
+                                                <p class="best_icon"></p>
+                                                <div class="anpo">
+                                                    <div class="aname">KH Closet</div>
+                                                    <div class="point" style="float:right"></div>
+                                                </div>
+                                            </div>
+                                            <h4>[[${item.itemNm}]]</h4>
+                                            <span class="price"><span class="amount">[[${item.price}]]원</span></span>
+                                        </a>
+                                    </li>
+                                </th:block>
+                            </ul>
+                            <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                                <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                            href="/itemList">더보기 &gt;</a></div>
+                            </div>
+                        </div>
+                        <div class="entry-thumbnail">
+                            <ul class="products">
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                                <li class="last product">
+                                    <a class="text-dark" href="/itemList">
+                                        <img class="card-img-top"
+                                             height="400"
+                                             src="https://atimg.sonyunara.com/files/attrangs/goods/147431/637758525a2da.gif">
+                                        <div class="info">
+                                            <p class="best_icon"></p>
+                                            <div class="anpo">
+                                                <div class="aname">KH Closet</div>
+                                                <div class="point" style="float:right"></div>
+                                            </div>
+                                        </div>
+                                        <h4>111</h4>
+                                        <span class="price"><span class="amount">1000원</span></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </header>
+                </article>
+            </main>
+        </div>
+    </div>
+    <div class="right-mg">
+        <a class="naver" href="javascript:;"
+           onclick="window.open('https://talk.naver.com/ct/w456wv', 'talktalk', 'width=471, height=640');return false;"
+           target="_blank"><img alt="네이버톡톡"
+                                src="https://atimg.sonyunara.com/attrangs/assets/web03/asset/img/common/naver_quick.png"></a>
+        <a class="kakao" href="javascript:;"
+           onclick="javascript:window.open('https://open.kakao.com/o/stVfZDOe', 'lunachat', 'width=1024, height=800');"><img
+                alt="카카오 상담"
+                src="https://atimg.sonyunara.com/attrangs/assets/web03/asset/img/common/kakao_quick.png"></a>
+        <a class="up" onClick="javascript:window.scrollTo(0,0)"><img
+                alt="상단이동" src="https://atimg.sonyunara.com/attrangs/assets/web03/asset/img/common/top_btn.png"
+                style="cursor: pointer;"></a>
+    </div>
+
+    <div class="slide">
+        <ul class="dot">
+            <li class="on"><a href="javascript:;">코트</a></li>
+            <li class=""><a href="javascript:;">자켓</a></li>
+            <li class=""><a href="javascript:;">상의</a></li>
+            <li class=""><a href="javascript:;">니트</a></li>
+            <li class=""><a href="javascript:;">하의</a></li>
+            <li class=""><a href="javascript:;">치마</a></li>
+            <li class=""><a href="javascript:;">모자</a></li>
+            <li class=""><a href="javascript:;">악세서리</a></li>
+        </ul>
+        <ul class="panel">
+            <li><a href="javascript:;"><img
+                    alt="사진 1"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/85153/619617312c5ca.jpg"></a>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/118461/62f63dcb2bf12.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[코트]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                신디 케이프 울 핸드메이드 하프 코트</a></p>
+                            <div class="info">
+                                <span class="sell">129,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/107890/625d339498283.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[코트]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                롱 핸드메이드 코트</a></p>
+                            <div class="info">
+                                <span class="sell">195,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/coat">더보기</a>
+                    </div>
+                </div>
+            </li>
+            <li><a href="javascript:;"><img
+                    alt="사진 2"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/98386/618b40d4a5853.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/140510/63590c11abd14.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[자켓]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                테이핑 트위드 자켓</a></p>
+                            <div class="info">
+                                <span class="sell">89,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/146240/636372bbe75cb.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[자켓]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                베니 빅카라 트위드 울 자켓</a></p>
+                            <div class="info">
+                                <span class="sell">109,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/jacket">더보기</a></div>
+                </div>
+            </li>
+            <li><a href="javascript:;"><img
+                    alt="사진 3"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/146774/636e235556161.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/109660/6201ffc48f144.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[니트 티셔츠]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                U넥 니트 티셔츠</a></p>
+                            <div class="info">
+                                <span class="sell">29,800원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/145421/635905d3f15cd.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[후드티]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                양기모 후드티</a></p>
+                            <div class="info">
+                                <span class="sell">34,800원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/t">더보기</a></div>
+                </div>
+            </li>
+            <li><a href="javascript:;"><img
+                    alt="사진 4"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/142496/63355807baef3.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/146174/63638c412917a.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[니트]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                르베 루즈핏 반오프 울 꽈배기 니트</a></p>
+                            <div class="info">
+                                <span class="sell">44.900원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/109660/6201ffc48f144.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[니트 티셔츠]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                리엘 탄탄소프트 골지 U넥 니트 티셔츠</a></p>
+                            <div class="info">
+                                <span class="sell">29,800원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/KNIT">더보기</a></div>
+                </div>
+            </li>
+            <li><a href="javascript:;"><img
+                    alt="사진 5"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/142517/6371ed1b22171.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/52377/5e009704c80d8.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[스키니]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                하이웨이스트 스키니 팬츠</a></p>
+                            <div class="info">
+                                <span class="sell">55,800원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/42315/1538389569_2.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[스키니]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                데님 스키니진</a></p>
+                            <div class="info">
+                                <span class="sell">39,600원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/PANTS">더보기</a></div>
+                </div>
+            </li>
+            <li><a href="javascript:;"><img
+                    alt="사진 6"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/38557/625fb62bea526.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/62359/1632454333_3.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[스커트]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                뮤르 H라인 3기장 베이직 스커트</a></p>
+                            <div class="info">
+                                <span class="sell">21,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/143348/6372153d5f97d.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[스커트]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                미니스커트</a></p>
+                            <div class="info">
+                                <span class="sell">99,500원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/SKIRT">더보기</a></div>
+                </div>
+            </li>
+            <li><a href="javascript:;"><img
+                    alt="사진 7"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/74341/61f0beb85d9c4.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/143591/6358ed5a1437b.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[모자]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                트위드 패브릭의 펜던트 울 마도로스 햇</a></p>
+                            <div class="info">
+                                <span class="sell">24,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/145028/636b656b542ad.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[핸드메이드&패딩]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                양털 패브릭의 베이직 버킷햇</a></p>
+                            <div class="info">
+                                <span class="sell">25,200원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/HAT">더보기</a></div>
+                </div>
+            </li>
+            <li><a href="javascript:;"><img
+                    alt="사진 8"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/47709/61f0bb56dde57.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/124797/62d66e1794ffb.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[악세서리]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                고급스러운 골드 체인 장식의 배색 헤어 밴드</a></p>
+                            <div class="info">
+                                <span class="sell">9,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/144851/635f77dcd1da0.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[핸드메이드&패딩]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                더블 빅리본 헤어핀</a></p>
+                            <div class="info">
+                                <span class="sell">13,500원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/ACC">더보기</a></div>
+                </div>
+            </li>
+            <!--            1번 슬라이드 -->
+            <li><a href="javascript:;"><img
+                    alt="사진 1"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/85153/619617312c5ca.jpg"></a>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/118461/62f63dcb2bf12.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[코트]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                신디 케이프 울 핸드메이드 하프 코트</a></p>
+                            <div class="info">
+                                <span class="sell">129,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/107890/625d339498283.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[코트]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                롱 핸드메이드 코트</a></p>
+                            <div class="info">
+                                <span class="sell">195,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/coat">더보기</a>
+                    </div>
+                </div>
+            </li>
+            <!--            2번 슬라이드 -->
+            <li><a href="javascript:;"><img
+                    alt="사진 2"
+                    src="https://atimg.sonyunara.com/files/attrangs/goods/98386/618b40d4a5853.jpg">
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/140510/63590c11abd14.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[자켓]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                테이핑 트위드 자켓</a></p>
+                            <div class="info">
+                                <span class="sell">89,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="left-content">
+                        <div class="prdimg">
+                            <a href="javascript:;"
+                               style="display:block; width:100%; padding-bottom:100%; height:0; " tabindex="0">
+                                <img src="https://atimg.sonyunara.com/files/attrangs/goods/146240/636372bbe75cb.jpg">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div>
+                            <div class="aname">[자켓]</div>
+                            <p class="name"><a href="javascript:;" tabindex="0">
+                                베니 빅카라 트위드 울 자켓</a></p>
+                            <div class="info">
+                                <span class="sell">109,000원</span> <!-- 판매가 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                <div class="btn tac" style="width:100%; margin-bottom:10%;">
+                    <div class="next-button"><a class="clickMap" data-clickmap="main_freedelivery_more"
+                                                href="/category/jacket">더보기</a></div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+</div>
+</div>
+</html>

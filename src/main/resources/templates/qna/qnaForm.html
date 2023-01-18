@@ -1,0 +1,87 @@
+<!-- QNA 등록 페이지 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout2}">
+
+<th:block layout:fragment="script">
+    <style>
+        h3 {
+            text-align: center;
+            margin : 30px 0;
+        }
+        .fieldError {
+            color : #bd2130;
+        }
+        .content-mg{
+            min-height : 60vh;
+            margin : 0 20%;
+        }
+        .form-group input[type="text"] {
+            padding : 0 0 0 10px;
+        }
+        .form-control {
+                vertical-align: middle;
+                height: 30px;
+                line-height: 40px;
+                margin: 2px 0;
+                padding: 0 0 0 10px;
+                border: 0 1px #ccc;
+                color: #222;
+                background-color: #f3f3f3;
+                box-sizing: border-box;
+        }
+        .btn-lg {
+            display : inline-block;
+            margin: 10px 5px 20px 5px;
+            border-radius : 0px;
+            background-color : #333;
+            color : #f9f9f9;
+            min-width : 70px;
+        }
+        .btn {
+            margin : 2% 0 0 0;
+        }
+    </style>
+    <script th:inline="javascript">
+        $(document).ready(function(){
+            var errorMessage = [[${errorMessage}]];
+            if(errorMessage != null){
+                alert(errorMessage);
+            }
+        });
+    </script>
+
+</th:block>
+
+<div layout:fragment="content" class="content-mg">
+
+    <h3> 1:1 문의하기 (QNA) </h3>
+    <form action="/qna/new" role="form" method="post"  th:object="${qnaDto}">
+        <input type="hidden" th:field="*{id}">
+        <div class="form-group">
+            <label th:for="qnaNm">분류</label>
+            <select th:field="*{qnaNm}" class="form-control">
+                <option th:value="'상품'" th:text="상품">상품</option>
+                <option th:value="'주문'" th:text="주문">주문</option>
+                <option th:value="'배송'" th:text="배송">배송</option>
+                <option th:value="'회원탈퇴'" th:text="회원탈퇴">회원탈퇴</option>
+                <option th:value="'기타'" th:text="기타">기타</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label th:for="title">제목</label>
+            <input type="text" th:field="*{title}" class="form-control" placeholder="제목을 입력해주세요">
+            <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError">Incorrect data</p>
+        </div>
+        <div class="form-group">
+            <label th:for="content">내용</label>
+            <textarea class="form-control" aria-label="With textarea" th:field="*{content}" placeholder="내용을 입력해주세요"></textarea>
+            <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError">Incorrect data</p>
+        </div>
+        <div style="text-align: center">
+            <button type="submit" class="btn btn-lg">등록</button>
+        </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    </form>
+</div>
+</html>

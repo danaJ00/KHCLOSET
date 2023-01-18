@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout2}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script th:inline="javascript">
+
+$(document).ready(function(){
+            $("#checkAll").trigger("click");
+            $("input[name=cartChkBox]").change( function(){
+                getOrderTotalPrice();
+            });
+        });
+
+        function getOrderTotalPrice(){
+            var orderTotalPrice = 0;
+            $("input[name=cartChkBox]:checked").each(function() {
+                var itemId = $(this).val();
+                var price = $("#totalPrice_" + itemId).attr("data-price");
+                orderTotalPrice += price*1;
+            });
+
+            $("#orderTotalPrice").html(orderTotalPrice+'원');
+        }
+
+
+        function checkAll(){
+            if($("#checkAll").prop("checked")){
+                $("input[name=cartChkBox]").prop("checked",true);
+            }else{
+                $("input[name=cartChkBox]").prop("checked",false);
+            }
+            getOrderTotalPrice();
+        }
+
+        function findAddr() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var addr = ''; // 주소 변수
+                var extraAddr = ''; // 참고항목 변수
+
+                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                }
+
+                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                if(data.userSelectedType === 'R'){
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    // 조합된 참고항목을 해당 필드에 넣는다.
+                    document.getElementById("extraAddress").value = extraAddr;
+
+                } else {
+                    document.getElementById("extraAddress").value = '';
+                }
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('zipcode').value = data.zonecode;
+                document.getElementById("streetAdr").value = addr;
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById("detailAdr").focus();
+            }
+        }).open();
+    }
+
+ $('#delivery_choice').click(function(){
+
+            var member_name =$('#member_name').val();
+            var postaddr=$('#zipcode').val();
+            var loadaddr=$('#streetAdr').val();
+            var jiaddr=$('#detailAdr').val();
+            var detailaddr=$('#extraAddress').val();
+            var member_cp1=$('#phone').val();
+
+
+         if($(this).val()=='same'){
+
+            $('#receiver').val(member_name);
+            $('#postaddr2').val(postaddr);
+            $('#loadaddr2').val(loadaddr);
+            $('#jiaddr2').val(jiaddr);
+            $('#detailaddr2').val(detailaddr);
+            $('#receiver_hp1').val(member_cp1);
+
+
+         }
+      });
+
+      $('#delivery_choice2').click(function(){
+
+         $('#receiver').val('');
+         $('#postaddr2').val('');
+         $('#loadaddr2').val('');
+         $('#jiaddr2').val('');
+         $('#detailaddr2').val('');
+         $('#receiver_hp1').val('');
+
+      });
+
+
+
+    </script>
+
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .mask{
+        background-position: -150px -80px;
+            position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    width: 100%;
+    height: 100%;
+        }
+        .content-mg{
+            margin-left:0;
+            margin-right:0;
+            margin-top:2%;
+            margin-bottom:100px;
+        }
+        .repImgDiv{
+            width:100%;
+            height:100%;
+            margin-right:15px;
+            margin-left:15px;
+            border-radius: 70%;
+            overflow: hidden;
+            background: #BDBDBD;
+
+        }
+        .repImg{
+            width: 100%;
+    height: 100%;
+    object-fit: cover;
+        }
+        .card{
+            width:750px;
+            height:100%;
+            padding:30px;
+            margin-bottom:20px;
+        }
+        .fs18{
+            font-size:18px
+        }
+        .fs24{
+            font-size:24px
+        }
+        table {
+   border-spacing: 30px;
+}
+
+input {
+   border: 1px;
+   border-color: black;
+   display: inline;
+}
+
+radio {
+   display: inline;
+}
+
+ .orderinfo {
+   width: 100%;
+      border-top : 3px solid darkgray;
+    border-left : none;
+    border-right : none;
+    line-height: 4;
+}
+.orderinfo th , .orderinfo td{
+   border-right: none;
+   border-left: none;
+    border-bottom : 1px solid darkgray;
+   text-align: center;
+}
+
+.bubbly-buttons {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  display: inline-block;
+  font-size: 1em;
+  padding: 1em 2em;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #FF084E;
+  color: #fff;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
+
+}
+.bubbly-buttons:focus {
+  outline: 0;
+}
+.bubbly-buttons:before, .bubbly-button:after {
+  position: absolute;
+  content: '';
+  display: block;
+  width: 140%;
+  height: 100%;
+  left: -20%;
+  z-index: -1000;
+  transition: all ease-in-out 0.5s;
+  background-repeat: no-repeat;
+}
+.bubbly-buttons:before {
+  display: none;
+  top: -75%;
+  background-image: radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, transparent 20%, #ff0081 20%, transparent 30%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, transparent 10%, #ff0081 15%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+}
+.bubbly-buttons:after {
+  display: none;
+  bottom: -75%;
+  background-image: radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, transparent 10%, #ff0081 15%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%), radial-gradient(circle, #ff0081 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%;
+}
+.bubbly-buttons:active {
+  transform: scale(0.9);
+  background-color: #e60074;
+  box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
+}
+.bubbly-buttons.animate:before {
+  display: block;
+  animation: topBubbles ease-in-out 0.75s forwards;
+}
+.bubbly-buttons.animate:after {
+  display: block;
+  animation: bottomBubbles ease-in-out 0.75s forwards;
+}
+
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%,  0% 0%,  0% 0%,  0% 0%,  0% 0%;
+  }
+}
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%,  0% 0%,  0% 0%,  0% 0%,  0% 0%;
+  }
+}
+
+    </style>
+</th:block>
+
+<div layout:fragment="content" class="content-mg">
+
+    <h2 class="mb-4" style="text-align:center">
+        주문/결제
+    </h2>
+
+
+    <div class="site-section">
+        <div style="margin:0 15%">
+            <table border="1" class="orderinfo">
+                <thead>
+                <input type="checkbox" id="checkAll" onclick="checkAll()" onchange="" checked style="display:none">
+                <tr style="text-align: center;">
+                    <th width="150px;">이미지</th>
+                    <th width="180px;">상품명</th>
+                    <th width="100px">상품정보</th>
+                    <th width="100px;">판매가</th>
+                    <th width="60px;">수량</th>
+                    <th width="100px;">배송구분</th>
+                    <th width="50px;">배송비</th>
+                    <th width="100px;">합계</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody  th:each="order : ${orders.getContent()}">
+
+
+                <tr th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}"  th:each="orderItem : ${order.orderItemDtoList}">
+
+
+                    <input type="checkbox" name="cartChkBox" th:value="${orderItem.itemId}" style="display:none">
+
+                    <td >
+                        <div class="repImgDiv">
+                            <a th:href="'/item/'+${orderItem.itemId}">
+                                <img th:src="${orderItem.imgUrl}" class="repImg" th:alt="${orderItem.itemNm}"></a>
+                        </div>
+                    </td>
+                    <td th:text="${orderItem.itemNm}"></td>
+                    <td th:text="${orderItem.itemDetail}"></td>
+                    <td th:text="${orderItem.itemPrice} + '원'"></td>
+                    <td th:text="${orderItem.count} +'개'">
+                    </td>
+                    <td >[기본 배송]</td>
+                    <td >무료</td>
+                    <strong >
+                        <td  th:id="'totalPrice_' + ${orderItem.itemId}"
+                             th:data-price="${orderItem.orderPrice * orderItem.count}"
+                             th:text="${orderItem.orderPrice * orderItem.count} +'원'"></td>
+                    </strong>
+                    <td>
+                        <button style="background-color:#f00;" type="button"><a style="color:#fff;" th:href="'/order/delete/' + ${order.orderId}">삭제</a></button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <div class="row">
+
+                <!--11111111111111111111111111-->
+
+                <div th:each="memberFormDto : ${memberFormDto}" class="col-md-12 mb-5 mb-md-0">
+                    <Br><br>
+                    <h2 class="h3 mb-3 text-black">주문자</h2>
+                    <div style="border: 1px solid darkgray;" class="p-3 p-lg-5">
+
+
+                        <!--이름-->
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label class="text-black">주문하시는분
+                                    <span style="color: red;">*</span></label>
+                                <input type="text" class="form-control" id="member_name" name="member_name"
+                                       th:value="${memberFormDto.name}"/>
+                            </div>
+                        </div>
+
+                        <!--주소-->
+                        <div class="form-group row">
+                            <div class="col-md-8">
+                                <label class="text-black">우편번호 <span
+                                        class="text-danger">*</span></label> <input type="text"
+                                                                                    class="form-control"
+                                                                                    placeholder="우편번호"
+                                                                                    th:value="${memberFormDto.zipcode}">
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control"
+                                   placeholder="도로명 주소" th:value="${memberFormDto.streetAdr}">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control"
+                                   placeholder="상세주소" th:value="${memberFormDto.detailAdr}">
+                        </div>
+                        <input type="hidden" placeholder="참고항목">
+
+
+                        <!--전화번호-->
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label class="text-black">휴대전화 <span
+                                        class="text-danger">*</span></label> <input type="text"
+                                                                                    class="form-control"
+                                                                                    th:value="${memberFormDto.phone}"
+                                                                                    id="phone">
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <form action="/post" role="form" method="post" th:object="${deliveryDto}"
+                      class="col-md-12 mb-5 mb-md-0">
+                    <div style="display:none;" th:each="order : ${orders.getContent()}">
+                        <div th:if ="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
+                            <input type="hidden" name="orderId" th:value="${order.orderId}">
+                        </div>
+
+                    </div>
+
+
+                    <div>
+                        <input type="hidden" th:field="*{id}">
+                        <Br><Br><Br><Br><Br>
+                        <h2 class="h3 mb-3 text-black">배송지</h2>
+                        <div style="border: 1px solid darkgray;" class="p-3 p-lg-5 ">
+
+
+                            <!--이름-->
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label class="text-black">받으시는분 </label> <input
+                                        type="text" class="form-control" th:field="*{deliveryName}">
+                                </div>
+                            </div>
+
+
+                            <!--주소-->
+
+                            <div class="form-group row">
+                                <div class="col-md-8">
+                                    <label class="text-black">주소 <span
+                                            class="text-danger">*</span></label> <input type="text"
+                                                                                        class="form-control"
+                                                                                        th:field="*{deliveryZipcode}"
+                                                                                        id="zipcode"
+                                                                                        placeholder="우편번호">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-black"><br></label> <input style="background-color:#222;"
+                                                                                  type="button" class="form-control"
+                                                                                  onclick="findAddr()" value="주소찾기">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" class="form-control" th:field="*{deliveryStreetAdr}"
+                                       id="streetAdr" placeholder="도로명 주소">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" th:field="*{deliveryDetailAdr}"
+                                       id="detailAdr" placeholder="상세 주소">
+                            </div>
+
+                            <input type="hidden" class="form-control"
+                                   id="extraAddress" placeholder="참고항복">
+
+
+                            <!--휴대번호-->
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label class="text-black">휴대전화 <span
+                                            class="text-danger">*</span></label> <input type="text"
+                                                                                        class="form-control"
+                                                                                        th:field="*{deliveryPhone}"
+                                                                                        placeholder="010-xxxx-xxxx 입력해주세요">
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="text-black">배송메시지 <span
+                                        class="text-danger">*</span></label> <select th:field="*{deliveryDetail}"
+                                                                                     class="form-control">
+                                <option value="부재시 문앞에 놔주세요" selected>부재시 문앞에 놔주세요</option>
+                                <option value="문앞에 두고가주세요(우편함에 넣어주셔도 돼요)" selected>문앞에 두고가주세요(우편함에 넣어주셔도 돼요)</option>
+                                <option value="부재시 경비실에 맡겨주세요">부재시 경비실에 맡겨주세요</option>
+                                <option value="도착하기전에 전화나 문자를 남겨주세요">도착하기전에 전화나 문자를 남겨주세요</option>
+                                <option value="배송전 미리 연락 부탁드립니다">배송전 미리 연락 부탁드립니다</option>
+                                <option value="문앞에 두고 문자주세요">문앞에 두고 문자주세요</option>
+                                <option value="문앞에 두고 전화주세요">문앞에 두고 전화주세요</option>
+                                <option value="택배함에 놔주세요">택배함에 놔주세요</option>
+                                <option value="깨지는 물건이니 조심히 다뤄주세요">깨지는 물건이니 조심히 다뤄주세요</option>
+
+
+                            </select>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <!--        <div  class="row mb-5">-->
+                    <div class="col-md-12" style="padding: 0 30% 0 30%">
+                        <br><br>
+                        <h2 class="h3 mb-3 text-black">Your Order</h2>
+                        <div style="border: 1px solid darkgray;" class="p-3 p-lg-5 border">
+                            <!--              <table class="table site-block-order-table mb-5">-->
+                            <!--                <thead>-->
+                            <!--                <td class="text-black font-weight-bold"><strong>총결제금액</strong></td>-->
+                            <!--                </thead>-->
+
+                            <!--                <tbody th:each="order : ${orders.getContent()}">-->
+                            <!--                <tr >-->
+                            <!--                  <td th:text="${#aggregates.sum(order.orderItemDtoList.![totalPrice])}+'원'" ></td>-->
+                            <!--                </tr>-->
+                            <!--                <tbody><tr><td><h2 class="text-center"><span id="orderTotalPrice">0원</span>-->
+                            <!--                </h2>-->
+                            <!--                </td>-->
+                            <!--                </tr>-->
+                            <!--                </tbody>-->
+                            <h2 class="text-center">
+                                총 결제 금액 : <span id="orderTotalPrice">0원</span>
+                            </h2>
+
+                            </table>
+
+
+                            <br>
+
+                            <div id="div_how_pay1" class="form-group">
+                                <label class="text-black">입금은행
+                                    <span
+                                            class="text-danger">*</span></label>
+                                <select
+                                        class="form-control" th:field="*{deliveryAccount}">
+                                    <option value="" selected>:::선택해 주세요:::</option>
+                                    <option value="기업은행">기업은행:02-987454-54-658-ThCloset</option>
+                                    <option value="국민은행">국민은행:65-654846-34-654-ThCloset</option>
+                                    <option value="신한은행">신한은행:68-686543-65-654-ThCloset</option>
+                                </select>
+
+
+                                <br>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <label class="text-black">입금자명 </label>
+                                        <input
+                                                type="text" class="form-control" th:field="*{deliveryAccountName}">
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                        <!--          </div>-->
+                    </div>
+                    <div style="text-align:center">
+                        <button type="submit" class="bubbly-buttons"><a href="/orders">결제하기</a></button>
+                    </div>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+</html>

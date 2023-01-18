@@ -1,0 +1,80 @@
+<!-- 아이템 전체 페이지 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<th:block layout:fragment="css">
+    <style>
+        .margin{
+            margin-bottom: 30px;
+        }
+        .banner{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .card-text{
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+        .center{
+            text-align: center;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
+    <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
+        <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색 결과'"></p>
+    </div>
+    <div id="content" class="site-content">
+        <div id="primary" class="content-area column full">
+            <main id="main" class="site-main" role="main">
+                <ul class="products">
+                    <th:block th:each="item, status: ${items.getContent()}">
+                        <a th:href="'/item/'+${item.id}" class="text-dark">
+
+                            <li class="first product">
+                                <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
+
+                                <h4>[[${item.itemNm}]]</h4>
+                                <span class="price"><span class="amount">[[${item.price}]]원</span></span>
+                                <p class="card-text">[[${item.itemDetail}]]</p>
+                            </li>
+                        </a>
+                    </th:block>
+                </ul>
+            </main>
+        </div>
+    </div>
+
+    <div th:with="start=${(items.number/maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                <a th:href="@{'/' + 'itemList?=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}"
+                   aria-label='Previous' class="page-link">
+                    <span aria-hidden='true'>Prev</span>
+                </a>
+            </li>
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
+                th:classappend="${items.number eq page-1}?'active':''">
+                <a th:href="@{'/' +'itemList?' + ${itemSearchDto.searchQuery} + 'page=' + ${page-1}}"
+                   th:inline="text" class="page-link">[[${page}]]</a>
+            </li>
+            <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
+                <a th:href="@{'/' +'itemList?' + ${itemSearchDto.searchQuery} + 'page=' + ${items.number+1}}"
+                   aria-label='Next' class="page-link">
+                    <span aria-hidden='true'>Next</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+</html>
